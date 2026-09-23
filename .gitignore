@@ -1,0 +1,42 @@
+# Credenciales y secretos
+.env
+.env.*
+*.pem
+*.key
+id_rsa
+id_ed25519
+
+# Multimedia original
+*.mp4
+*.mkv
+*.avi
+*.mov
+*.webm
+
+# Segmentos HLS generados
+*.ts
+
+# Capturas de tráfico
+*.pcap
+*.pcapng
+*.log
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Archivos temporales
+tmp/
+temp/
+
+# Resultados experimentales
+results/
+output/
+
+# Archivos del sistema
+.DS_Store
+EOF
