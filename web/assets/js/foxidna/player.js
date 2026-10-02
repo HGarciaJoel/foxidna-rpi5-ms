@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
 
     /* =========================================================
@@ -25,12 +24,29 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    const videoSrc = `/hls/${videoId}/master.m3u8`;
+
 
     /* =========================================================
-       Ruta al manifiesto HLS
+       Inicialización de Plyr (NUEVO)
        ========================================================= */
-
-    const videoSrc = `/hls/${videoId}/master.m3u8`;
+       
+    const player = new Plyr(video, {
+        controls: [
+            'play-large', 'rewind', 'play', 'fast-forward', 
+            'progress', 'current-time', 'duration', 
+            'mute', 'volume', 'settings', 'pip', 'fullscreen'
+        ],
+        seekTime: 10, // Saltos de 10 segundos
+        settings: ['speed'], // Menú interno solo para velocidad (Calidad está en tu menú)
+        speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
+        i18n: {
+            rewind: 'Retrasar 10s',
+            fastForward: 'Adelantar 10s',
+            speed: 'Velocidad',
+            normal: 'Normal'
+        }
+    });
 
 
     /* =========================================================
@@ -44,169 +60,89 @@ document.addEventListener("DOMContentLoaded", () => {
         hls.loadSource(videoSrc);
         hls.attachMedia(video);
 
-
         /* -----------------------------------------------------
            Manifiesto cargado
            ----------------------------------------------------- */
-
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
 
             qualitySelect.innerHTML = "";
 
             /* Opción automática */
-
-            const autoOption =
-                document.createElement("option");
-
+            const autoOption = document.createElement("option");
             autoOption.value = "-1";
             autoOption.textContent = "Automático";
-
             qualitySelect.appendChild(autoOption);
 
-
             /* Opciones reales disponibles */
-
             hls.levels.forEach((level, index) => {
-
-                const option =
-                    document.createElement("option");
-
+                const option = document.createElement("option");
                 option.value = index;
-
-                option.textContent =
-                    `${level.width} × ${level.height}`;
-
+                option.textContent = `${level.width} × ${level.height}`;
                 qualitySelect.appendChild(option);
-
             });
 
-
-            /* Intentar reproducción automática */
-
-            video.play().catch(() => {
-                console.log(
-                    "Auto-play prevenido por el navegador."
-                );
+            /* Usamos Plyr para intentar la reproducción automática */
+            player.play().catch(() => {
+                console.log("Auto-play prevenido por el navegador.");
             });
 
         });
-
 
         /* -----------------------------------------------------
            Selección manual de calidad
            ----------------------------------------------------- */
-
         qualitySelect.addEventListener("change", () => {
-
-            const level =
-                parseInt(qualitySelect.value, 10);
-
+            const level = parseInt(qualitySelect.value, 10);
             hls.currentLevel = level;
-
         });
-
 
         /* -----------------------------------------------------
            Cambio efectivo de resolución
            ----------------------------------------------------- */
+        hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
+            const level = hls.levels[data.level];
 
-        hls.on(
-            Hls.Events.LEVEL_SWITCHED,
-            (event, data) => {
-
-                const level =
-                    hls.levels[data.level];
-
-                if (!level) {
-                    return;
-                }
-
-                resData.textContent =
-                    `${level.width} × ${level.height}`;
-
-                bitrateData.textContent =
-                    `${(level.bitrate / 1000).toFixed(0)} kb/s`;
-
+            if (!level) {
+                return;
             }
-        );
 
+            resData.textContent = `${level.width} × ${level.height}`;
+            bitrateData.textContent = `${(level.bitrate / 1000).toFixed(0)} kb/s`;
+        });
 
         /* -----------------------------------------------------
            Velocidad de transferencia
            ----------------------------------------------------- */
+        hls.on(Hls.Events.FRAG_LOADED, (event, data) => {
+            const bytes = data.frag.stats.total;
+            const start = data.frag.stats.loading.start;
+            const end = data.frag.stats.loading.end;
+            const tiempo = (end - start) / 1000;
 
-        hls.on(
-            Hls.Events.FRAG_LOADED,
-            (event, data) => {
-
-                const bytes =
-                    data.frag.stats.total;
-
-                const start =
-                    data.frag.stats.loading.start;
-
-                const end =
-                    data.frag.stats.loading.end;
-
-                const tiempo =
-                    (end - start) / 1000;
-
-                if (tiempo <= 0) {
-                    return;
-                }
-
-                const velocidad =
-                    (
-                        bytes *
-                        8 /
-                        tiempo /
-                        1000000
-                    ).toFixed(2);
-
-                downData.textContent =
-                    `${velocidad} Mb/s`;
-
+            if (tiempo <= 0) {
+                return;
             }
-        );
 
+            const velocidad = (bytes * 8 / tiempo / 1000000).toFixed(2);
+            downData.textContent = `${velocidad} Mb/s`;
+        });
 
     /* =========================================================
        HLS nativo del navegador
        ========================================================= */
-
-    } else if (
-        video.canPlayType(
-            "application/vnd.apple.mpegurl"
-        )
-    ) {
-
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
         video.src = videoSrc;
-
-        video.addEventListener(
-            "loadedmetadata",
-            () => {
-
-                video.play().catch(() => {
-                    console.log(
-                        "Auto-play prevenido por el navegador."
-                    );
-                });
-
-            }
-        );
-
+        video.addEventListener("loadedmetadata", () => {
+            player.play().catch(() => {
+                console.log("Auto-play prevenido por el navegador.");
+            });
+        });
 
     /* =========================================================
        HLS no disponible
        ========================================================= */
-
     } else {
-
-        alert(
-            "Tu navegador no soporta reproducción HLS."
-        );
-
+        alert("Tu navegador no soporta reproducción HLS.");
     }
 
 });
-

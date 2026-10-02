@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reproductor - foxidna</title>
+    
     <link rel="stylesheet" href="assets/css/fonts.css">
+    
+    <!-- 1. CSS de Plyr añadido aquí -->
+    <link rel="stylesheet" href="assets/css/plyr.css" />
+    
     <link rel="stylesheet" href="assets/css/player.css">
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <link rel="stylesheet" href="assets/css/plyr.css" />
 </head>
 <body>
     <div class="header">
@@ -20,7 +25,8 @@
     </div>
 
     <div class="player-wrapper">
-        <video id="videoPlayer" controls autoplay></video>
+        <!-- 2. Quitamos 'controls' y 'autoplay' para evitar conflictos con Plyr -->
+        <video id="videoPlayer" crossorigin playsinline></video>
     </div>
 
     <div class="metrics-panel">
@@ -37,10 +43,13 @@
             <div id="downData" class="metrics-data">Calculando...</div>
         </div>
     </div>
-	<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-	<script src="assets/js/vendor/animejs/anime.min.js"></script>
-	<script src="assets/js/foxidna/player.js"></script>
-	<script src="assets/js/foxidna/ui.js"></script>
-	
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    
+    <!-- 3. JS de Plyr añadido aquí -->
+    <script src="assets/js/vendor/plyr.polyfilled.js"></script>    
+    <script src="assets/js/vendor/animejs/anime.min.js"></script>
+    <script src="assets/js/foxidna/player.js"></script>
+    <script src="assets/js/foxidna/ui.js"></script>
 </body>
 </html>
