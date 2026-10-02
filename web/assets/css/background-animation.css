@@ -1,0 +1,94 @@
+/* =========================================================
+   FOXIDNA — Animación de fondo
+   ========================================================= */
+
+#creature-wrapper {
+    position: fixed;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+
+    pointer-events: none;
+
+    /*
+     * Mantiene la animación detrás de la interfaz.
+     */
+    z-index: 0;
+
+    /*
+     * Opacidad global del efecto.
+     * El valor original era visualmente demasiado intenso.
+     */
+    opacity: 0.8;
+}
+
+
+#creature {
+    font-size: 0.2vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    /*
+     * El tamaño real será establecido por JavaScript.
+     */
+    width: 130em;
+    height: 130em;
+}
+
+
+#creature div {
+    position: relative;
+
+    width: 4em;
+    height: 4em;
+
+    margin: 3em;
+
+    border-radius: 50%;
+
+    transform-style: preserve-3d;
+
+    /*
+     * Anime.js modifica continuamente transformaciones.
+     */
+    will-change: transform;
+
+    /*
+     * Mantiene el efecto luminoso del ejemplo original.
+     */
+    mix-blend-mode: plus-lighter;
+
+    /*
+     * Color base.
+     * Anime.js modificará el tono individual de cada partícula.
+     */
+    background: var(--accent-pink);
+
+    /*
+     * Evita que las partículas interfieran con
+     * botones, enlaces y controles.
+     */
+    pointer-events: none;
+}
+
+
+/*
+ * Las partículas estarán detrás del contenido.
+ */
+
+.site-header,
+.main-content {
+    position: relative;
+    z-index: 1;
+}

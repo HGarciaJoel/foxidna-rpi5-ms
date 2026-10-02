@@ -1,131 +1,166 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>foxidna</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-main: #0f0f0f;
-            --bg-card: #272727;
-            --text-main: #f1f1f1;
-            --text-muted: #aaaaaa;
-            --accent-pink: #FF00CC;
-            --accent-crimson: #FF004D;
-            --accent-purple: #B300FF;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            margin: 0;
-            padding: 30px 40px;
-        }
-        .header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-        .logo {
-            font-size: 32px;
-            font-weight: 800;
-            background: linear-gradient(45deg, var(--accent-pink), var(--accent-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -1px;
-        }
-        .grid-container {
-            display: grid;
-            /* Cuadrícula responsiva enfocada en PC */
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-        }
-        .video-card {
-            background-color: var(--bg-card);
-            border-radius: 12px;
-            overflow: hidden;
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
-        }
-        /* Animación de elevación y brillo de neón al pasar el cursor */
-        .video-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 12px 25px rgba(255, 0, 204, 0.15);
-        }
-        .thumbnail {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: linear-gradient(135deg, #1a1a1a, #333);
-            position: relative;
-            overflow: hidden;
-        }
-        /* Reflejo animado sobre la miniatura */
-        .thumbnail::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);
-            transform: skewX(-20deg);
-            transition: left 0.6s ease;
-        }
-        .video-card:hover .thumbnail::after {
-            left: 150%;
-        }
-        .card-content {
-            padding: 16px;
-        }
-        .video-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin: 0 0 6px 0;
-            line-height: 1.4;
-        }
-        .video-meta {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-    </style>
+
+    <!-- Fuentes locales: se conectarán cuando agreguemos los archivos -->
+    <!-- Inter: interfaz -->
+    <!-- Fira Code: información técnica -->
+	<link rel="stylesheet" href="assets/css/fonts.css">
+	<link rel="stylesheet" href="assets/css/background-animation.css">
+        <link rel="stylesheet" href="assets/css/foxidna.css">
 </head>
+
 <body>
-    <div class="header">
-        <div class="logo">foxidna</div>
+
+    <div id="creature-wrapper">
+    <div id="creature"></div>
     </div>
-    
-    <div class="grid-container">
-        <!-- El enlace pasa el parámetro ?v=video1 al reproductor maestro -->
-        <a href="player.html?v=video1" class="video-card">
-            <div class="thumbnail"></div>
-            <div class="card-content">
-                <h3 class="video-title">Video de prueba</h3>
-                <div class="video-meta">Servidor Local</div>
+
+    <header class="site-header">
+        <div class="brand">
+            <span class="brand-name">foxidna</span>
+        </div>
+    </header>
+
+
+    <main class="main-content">
+
+        <section class="library">
+            <div class="section-header">
+                <h1 class="section-title">Vídeos</h1>
+                <span class="section-count">4 elementos</span>
             </div>
-        </a>
-        
-        <a href="player.html?v=video2" class="video-card">
-            <div class="thumbnail"></div>
-            <div class="card-content">
-                <h3 class="video-title">Coliseo de los incensatos</h3>
-                <div class="video-meta">Servidor Local</div>
+
+
+            <div class="video-grid">
+
+                <!-- Video 1 -->
+                <a href="player.html?v=video1"
+                   class="video-card"
+                   data-video="video1">
+
+                    <div class="video-preview">
+                        <div class="preview-overlay"></div>
+
+                        <div class="play-button" aria-hidden="true">
+                            <span></span>
+                        </div>
+
+                        <span class="video-badge">LOCAL</span>
+
+                        <div class="video-info-overlay">
+                            <span class="info-label">SERVIDOR LOCAL</span>
+                            <span class="info-title">Vídeo de prueba</span>
+                        </div>
+                    </div>
+
+                    <div class="card-content">
+                        <h2 class="video-title">Vídeo de prueba</h2>
+                        <p class="video-meta">Servidor local</p>
+                    </div>
+
+                </a>
+
+
+                <!-- Video 2 -->
+                <a href="player.html?v=video2"
+                   class="video-card"
+                   data-video="video2">
+
+                    <div class="video-preview">
+                        <div class="preview-overlay"></div>
+
+                        <div class="play-button" aria-hidden="true">
+                            <span></span>
+                        </div>
+
+                        <span class="video-badge">LOCAL</span>
+
+                        <div class="video-info-overlay">
+                            <span class="info-label">SERVIDOR LOCAL</span>
+                            <span class="info-title">Coliseo de los incensatos</span>
+                        </div>
+                    </div>
+
+                    <div class="card-content">
+                        <h2 class="video-title">Coliseo de los incensatos</h2>
+                        <p class="video-meta">Servidor local</p>
+                    </div>
+
+                </a>
+
+
+                <!-- HowToVoidVessel -->
+                <a href="player.html?v=HowToVoidVessel"
+                   class="video-card"
+                   data-video="HowToVoidVessel">
+
+                    <div class="video-preview">
+                        <div class="preview-overlay"></div>
+
+                        <div class="play-button" aria-hidden="true">
+                            <span></span>
+                        </div>
+
+                        <span class="video-badge">LOCAL</span>
+
+                        <div class="video-info-overlay">
+                            <span class="info-label">SERVIDOR LOCAL</span>
+                            <span class="info-title">
+                                Tutorial como vencer a Vasija Pura
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="card-content">
+                        <h2 class="video-title">
+                            Tutorial como vencer a Vasija Pura
+                        </h2>
+                        <p class="video-meta">Servidor local</p>
+                    </div>
+
+                </a>
+
+
+                <!-- manyBosses -->
+                <a href="player.html?v=manyBosses"
+                   class="video-card"
+                   data-video="manyBosses">
+
+                    <div class="video-preview">
+                        <div class="preview-overlay"></div>
+
+                        <div class="play-button" aria-hidden="true">
+                            <span></span>
+                        </div>
+
+                        <span class="video-badge">LOCAL</span>
+
+                        <div class="video-info-overlay">
+                            <span class="info-label">SERVIDOR LOCAL</span>
+                            <span class="info-title">Muchos jefes</span>
+                        </div>
+                    </div>
+
+                    <div class="card-content">
+                        <h2 class="video-title">Muchos jefes</h2>
+                        <p class="video-meta">Servidor local</p>
+                    </div>
+
+                </a>
+
             </div>
-        </a>
-   	<a href="player.html?v=HowToVoidVessel" class="video-card">
-            <div class="thumbnail"></div>
-            <div class="card-content">
-                <h3 class="video-title">Tutorial como vencer a vasija pura </h3>
-                <div class="video-meta">Servidor Local</div>
-            </div>
-        </a>
-	<a href="player.html?v=manyBosses" class="video-card">
-            <div class="thumbnail"></div>
-            <div class="card-content">
-                <h3 class="video-title">Muchos jefes</h3>
-                <div class="video-meta">Servidor Local</div>
-            </div>
-        </a>
-    </div>
+        </section>
+
+    </main>
+	<script src="assets/js/vendor/animejs/anime.min.js"></script>
+        <script src="assets/js/foxidna/background-animation.js"></script>
+	<script src="assets/js/foxidna/animations.js"></script>
+	<script src="assets/js/foxidna/ui.js"></script>
 </body>
 </html>

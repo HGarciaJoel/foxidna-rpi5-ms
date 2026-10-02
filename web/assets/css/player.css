@@ -1,0 +1,164 @@
+:root {
+    --bg-main: #0f0f0f;
+    --bg-card: #272727;
+    --text-main: #f1f1f1;
+
+    --accent-pink: #FF00CC;
+    --accent-crimson: #FF004D;
+    --accent-purple: #B300FF;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+
+    margin: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 30px;
+}
+
+.header {
+    width: 100%;
+    max-width: 1080px;
+
+    margin-bottom: 20px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.back-btn {
+    color: var(--accent-pink);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+
+    display: inline-flex;
+    align-items: center;
+
+    transition:
+        color 0.3s,
+        transform 0.3s;
+}
+
+.back-btn:hover {
+    color: var(--accent-crimson);
+    transform: translateX(-5px);
+}
+
+.controls-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quality-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.quality-select {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+
+    border: 1px solid var(--accent-pink);
+
+    padding: 6px 12px;
+
+    border-radius: 8px;
+
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+
+    outline: none;
+    cursor: pointer;
+
+    transition:
+        border-color 0.3s,
+        box-shadow 0.3s;
+}
+
+.quality-select:hover,
+.quality-select:focus {
+    border-color: var(--accent-crimson);
+
+    box-shadow:
+        0 0 10px rgba(255, 0, 204, 0.3);
+}
+
+.player-wrapper {
+    width: 100%;
+    max-width: 1080px;
+
+    background: #000;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.4);
+
+    border: 1px solid var(--bg-card);
+}
+
+video {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+
+    display: block;
+
+    outline: none;
+}
+
+.metrics-panel {
+    width: 100%;
+    max-width: 1040px;
+
+    margin-top: 25px;
+
+    background: var(--bg-card);
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    border-left: 5px solid var(--accent-pink);
+
+    box-sizing: border-box;
+
+    display: flex;
+    justify-content: space-around;
+}
+
+.metrics-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.metrics-title {
+    font-size: 12px;
+    font-weight: 800;
+
+    color: var(--accent-pink);
+
+    margin-bottom: 8px;
+
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.metrics-data {
+    font-family: 'Fira Code', monospace;
+    font-size: 15px;
+
+    color: #fff;
+}

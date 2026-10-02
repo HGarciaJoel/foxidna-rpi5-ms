@@ -1,0 +1,506 @@
+```css
+/* =========================================================
+   FOXIDNA
+   Tema visual principal
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   Variables
+   --------------------------------------------------------- */
+/* =========================================================
+   Fuentes locales
+   ========================================================= */
+
+@font-face {
+    font-family: "Inter";
+    src: url("../fonts/Inter/InterVariable.woff2") format("woff2");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Fira Code";
+    src: url("../fonts/FiraCode/FiraCode-VF.woff2") format("woff2");
+    font-weight: 300 700;
+    font-style: normal;
+    font-display: swap;
+}
+:root {
+    /* Fondo */
+    --bg-main: #0f0f12;
+    --bg-surface: #18181d;
+    --bg-surface-hover: #202027;
+
+    /* Texto */
+    --text-main: #f1f1f4;
+    --text-secondary: #a5a5af;
+    --text-subtle: #777780;
+
+    /* Identidad foxidna */
+    --accent-pink: #ff00cc;
+    --accent-crimson: #ff004d;
+    --accent-purple: #b300ff;
+
+    /* Bordes */
+    --border: #292930;
+
+    /* Radio */
+    --radius-card: 12px;
+    --radius-small: 8px;
+
+    /* Movimiento */
+    --transition-fast: 140ms ease;
+    --transition-normal: 200ms ease;
+    --transition-slow: 280ms ease;
+
+    /* Fuente */
+    --font-ui: "Inter", sans-serif;
+    --font-tech: "Fira Code", monospace;
+}
+
+
+/* ---------------------------------------------------------
+   Reset básico
+   --------------------------------------------------------- */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    background: var(--bg-main);
+    color-scheme: dark;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            circle at 50% -20%,
+            rgba(179, 0, 255, 0.06),
+            transparent 40%
+        ),
+        var(--bg-main);
+
+    color: var(--text-main);
+    font-family: var(--font-ui);
+}
+
+
+/* ---------------------------------------------------------
+   Header
+   --------------------------------------------------------- */
+
+.site-header {
+    display: flex;
+    align-items: center;
+
+    height: 72px;
+    padding: 0 40px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+    background: rgba(15, 15, 18, 0.92);
+}
+
+
+/* ---------------------------------------------------------
+   Marca
+   --------------------------------------------------------- */
+
+.brand-name {
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--accent-crimson),
+            var(--accent-pink),
+            var(--accent-purple)
+        );
+
+    background-clip: text;
+    -webkit-background-clip: text;
+
+    color: transparent;
+}
+
+
+/* ---------------------------------------------------------
+   Contenido principal
+   --------------------------------------------------------- */
+
+.main-content {
+    width: min(1500px, calc(100% - 80px));
+    margin: 0 auto;
+    padding: 36px 0 60px;
+}
+
+
+/* ---------------------------------------------------------
+   Encabezado de biblioteca
+   --------------------------------------------------------- */
+
+.section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+
+    margin-bottom: 24px;
+}
+
+.section-title {
+    margin: 0;
+
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.section-count {
+    color: var(--text-subtle);
+
+    font-family: var(--font-tech);
+    font-size: 12px;
+}
+
+
+/* ---------------------------------------------------------
+   Grid
+   --------------------------------------------------------- */
+
+.video-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(300px, 1fr)
+        );
+
+    gap: 28px 22px;
+}
+
+
+/* ---------------------------------------------------------
+   Tarjeta
+   --------------------------------------------------------- */
+
+.video-card {
+    display: block;
+
+    color: inherit;
+    text-decoration: none;
+
+    border-radius: var(--radius-card);
+
+    background: var(--bg-surface);
+
+    overflow: hidden;
+
+    border: 1px solid transparent;
+
+    transition:
+        transform var(--transition-normal),
+        background-color var(--transition-normal),
+        border-color var(--transition-normal),
+        box-shadow var(--transition-normal);
+}
+
+
+/* ---------------------------------------------------------
+   Hover tarjeta
+   --------------------------------------------------------- */
+
+.video-card:hover {
+    transform: translateY(-5px);
+
+    background: var(--bg-surface-hover);
+
+    border-color: rgba(255, 0, 204, 0.35);
+
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.35),
+        0 0 24px rgba(255, 0, 204, 0.08);
+}
+
+
+/* ---------------------------------------------------------
+   Zona visual de vídeo
+   --------------------------------------------------------- */
+
+.video-preview {
+    position: relative;
+
+    width: 100%;
+    aspect-ratio: 16 / 9;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 30% 30%,
+            rgba(255, 0, 204, 0.18),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 70% 70%,
+            rgba(179, 0, 255, 0.16),
+            transparent 40%
+        ),
+        linear-gradient(
+            135deg,
+            #17171d,
+            #24242b
+        );
+}
+
+
+/* ---------------------------------------------------------
+   Capa visual
+   --------------------------------------------------------- */
+
+.preview-overlay {
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 0, 204, 0.04),
+            rgba(179, 0, 255, 0.08)
+        );
+
+    transition:
+        opacity var(--transition-normal);
+}
+
+.video-card:hover .preview-overlay {
+    opacity: 0.65;
+}
+
+
+/* ---------------------------------------------------------
+   Botón de reproducción
+   --------------------------------------------------------- */
+
+.play-button {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0.92);
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--accent-crimson),
+            var(--accent-pink),
+            var(--accent-purple)
+        );
+
+    box-shadow:
+        0 6px 24px rgba(0, 0, 0, 0.35),
+        0 0 24px rgba(255, 0, 204, 0.2);
+
+    opacity: 0.88;
+
+    transition:
+        transform var(--transition-normal),
+        opacity var(--transition-normal),
+        box-shadow var(--transition-normal);
+}
+
+.video-card:hover .play-button {
+    transform:
+        translate(-50%, -50%)
+        scale(1);
+
+    opacity: 1;
+
+    box-shadow:
+        0 8px 28px rgba(0, 0, 0, 0.4),
+        0 0 34px rgba(255, 0, 204, 0.3);
+}
+
+
+/* Triángulo del botón */
+
+.play-button span {
+    width: 0;
+    height: 0;
+
+    margin-left: 4px;
+
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    border-left: 14px solid #ffffff;
+}
+
+
+/* ---------------------------------------------------------
+   Badge
+   --------------------------------------------------------- */
+
+.video-badge {
+    position: absolute;
+
+    top: 12px;
+    right: 12px;
+
+    padding: 5px 8px;
+
+    border-radius: var(--radius-small);
+
+    background: rgba(0, 0, 0, 0.62);
+    backdrop-filter: blur(6px);
+
+    color: #ffffff;
+
+    font-family: var(--font-tech);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+
+/* ---------------------------------------------------------
+   Información que aparece con hover
+   --------------------------------------------------------- */
+
+.video-info-overlay {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    padding: 22px 16px 14px;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.88),
+            rgba(0, 0, 0, 0)
+        );
+
+    opacity: 0;
+
+    transform: translateY(8px);
+
+    transition:
+        opacity var(--transition-slow),
+        transform var(--transition-slow);
+}
+
+.video-card:hover .video-info-overlay {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.info-label {
+    color: var(--accent-pink);
+
+    font-family: var(--font-tech);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+}
+
+.info-title {
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/* ---------------------------------------------------------
+   Contenido de tarjeta
+   --------------------------------------------------------- */
+
+.card-content {
+    padding: 14px 15px 16px;
+}
+
+.video-title {
+    margin: 0;
+
+    color: var(--text-main);
+
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.video-meta {
+    margin: 5px 0 0;
+
+    color: var(--text-secondary);
+
+    font-family: var(--font-tech);
+    font-size: 11px;
+}
+
+
+/* ---------------------------------------------------------
+   Accesibilidad: foco de teclado
+   --------------------------------------------------------- */
+
+.video-card:focus-visible {
+    outline: 2px solid var(--accent-pink);
+    outline-offset: 3px;
+}
+
+
+/* ---------------------------------------------------------
+   Preparación para futuras versiones responsive
+   --------------------------------------------------------- */
+
+@media (max-width: 800px) {
+    .site-header {
+        padding: 0 20px;
+    }
+
+    .main-content {
+        width: calc(100% - 40px);
+    }
+}
+
+
+/* ---------------------------------------------------------
+   Respeto por usuarios que reducen movimiento
+   --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        transform: none !important;
+    }
+}
+```

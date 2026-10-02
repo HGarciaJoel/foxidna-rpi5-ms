@@ -4,120 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reproductor - foxidna</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/fonts.css">
+    <link rel="stylesheet" href="assets/css/player.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <style>
-        :root {
-            --bg-main: #0f0f0f;
-            --bg-card: #272727;
-            --text-main: #f1f1f1;
-            --accent-pink: #FF00CC;
-            --accent-crimson: #FF004D;
-            --accent-purple: #B300FF;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px;
-        }
-        .header {
-            width: 100%;
-            max-width: 1080px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .back-btn {
-            color: var(--accent-pink);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 15px;
-            display: inline-flex;
-            align-items: center;
-            transition: color 0.3s, transform 0.3s;
-        }
-        .back-btn:hover {
-            color: var(--accent-crimson);
-            transform: translateX(-5px);
-        }
-        .controls-bar {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .quality-label {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-main);
-        }
-        .quality-select {
-            background-color: var(--bg-card);
-            color: var(--text-main);
-            border: 1px solid var(--accent-pink);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-family: 'Fira Code', monospace;
-            font-size: 14px;
-            outline: none;
-            cursor: pointer;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-        .quality-select:hover, .quality-select:focus {
-            border-color: var(--accent-crimson);
-            box-shadow: 0 0 10px rgba(255, 0, 204, 0.3);
-        }
-        .player-wrapper {
-            width: 100%;
-            max-width: 1080px;
-            background: #000;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            border: 1px solid var(--bg-card);
-        }
-        video {
-            width: 100%;
-            aspect-ratio: 16/9;
-            display: block;
-            outline: none;
-        }
-        .metrics-panel {
-            width: 100%;
-            max-width: 1040px;
-            margin-top: 25px;
-            background: var(--bg-card);
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 5px solid var(--accent-pink);
-            box-sizing: border-box;
-            display: flex;
-            justify-content: space-around;
-        }
-        .metrics-block {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .metrics-title {
-            font-size: 12px;
-            font-weight: 800;
-            color: var(--accent-pink);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .metrics-data {
-            font-family: 'Fira Code', monospace;
-            font-size: 15px;
-            color: #fff;
-        }
-    </style>
 </head>
 <body>
     <div class="header">
@@ -148,76 +37,10 @@
             <div id="downData" class="metrics-data">Calculando...</div>
         </div>
     </div>
-
-    <script>
-        const video = document.getElementById('videoPlayer');
-        const qualitySelect = document.getElementById('qualitySelect');
-        
-        // 1. Obtener identificador desde el parámetro ?v= de la URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const videoId = urlParams.get('v');
-
-        if (!videoId) {
-            window.location.href = 'index.html';
-        }
-
-        // 2. Ruta dinámica al manifiesto maestro
-        const videoSrc = `/hls/${videoId}/master.m3u8`;
-
-        if (Hls.isSupported()) {
-            const hls = new Hls();
-
-            hls.loadSource(videoSrc);
-            hls.attachMedia(video);
-
-            // 3. Generar dinámicamente las opciones del selector de calidad
-            hls.on(Hls.Events.MANIFEST_PARSED, function () {
-                qualitySelect.innerHTML = "";
-
-                const autoOption = document.createElement("option");
-                autoOption.value = -1;
-                autoOption.textContent = "Automático";
-                qualitySelect.appendChild(autoOption);
-
-                hls.levels.forEach((level, index) => {
-                    const option = document.createElement("option");
-                    option.value = index;
-                    option.textContent = `${level.width} × ${level.height}`;
-                    qualitySelect.appendChild(option);
-                });
-
-                video.play().catch(e => console.log("Auto-play prevenido por el navegador."));
-            });
-
-            // 4. Forzar la calidad seleccionada por el usuario
-            qualitySelect.addEventListener("change", function () {
-                const level = parseInt(this.value);
-                hls.currentLevel = level;
-            });
-
-            // 5. Actualizar métricas cuando se conmuta la resolución
-            hls.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
-                const level = hls.levels[data.level];
-                document.getElementById('resData').textContent = `${level.width} × ${level.height}`;
-                document.getElementById('bitrateData').textContent = `${(level.bitrate / 1000).toFixed(0)} kb/s`;
-            });
-
-            // 6. Medir la velocidad de transferencia de segmentos
-            hls.on(Hls.Events.FRAG_LOADED, function(event, data) {
-                const bytes = data.frag.stats.total;
-                const tiempo = (data.frag.stats.loading.end - data.frag.stats.loading.start) / 1000;
-                const velocidad = (bytes * 8 / tiempo / 1000000).toFixed(2);
-                document.getElementById('downData').textContent = `${velocidad} Mb/s`;
-            });
-
-        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = videoSrc;
-            video.addEventListener('loadedmetadata', function() {
-                video.play();
-            });
-        } else {
-            alert("Tu navegador no soporta reproducción HLS.");
-        }
-    </script>
+	<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+	<script src="assets/js/vendor/animejs/anime.min.js"></script>
+	<script src="assets/js/foxidna/player.js"></script>
+	<script src="assets/js/foxidna/ui.js"></script>
+	
 </body>
 </html>
