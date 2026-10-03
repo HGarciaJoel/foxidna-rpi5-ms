@@ -10,11 +10,30 @@ declare(strict_types=1);
  *
  * Responsabilidad:
  *   Obtener metadatos técnicos de un vídeo HLS concreto.
+ *
+ * Caché:
+ *   Los resultados de FFprobe se almacenan en:
+ *
+ *   /var/cache/foxidna/metadata/
+ *
+ *   La caché se invalida automáticamente cuando cambia
+ *   cualquiera de las playlists HLS asociadas al vídeo.
  */
 
 require_once __DIR__ . '/lib/catalog.php';
+require_once __DIR__ . '/lib/metadata_cache.php';
 
 header('Content-Type: application/json; charset=utf-8');
+
+
+/*
+ * ------------------------------------------------------------
+ * Configuración de caché
+ * ------------------------------------------------------------
+ */
+
+$cacheDirectory = '/var/cache/foxidna/metadata';
+
 
 /*
  * ------------------------------------------------------------
@@ -25,6 +44,7 @@ header('Content-Type: application/json; charset=utf-8');
 $id = $_GET['id'] ?? '';
 
 if (!is_string($id) || $id === '') {
+
     http_response_code(400);
 
     echo json_encode(
@@ -39,6 +59,7 @@ if (!is_string($id) || $id === '') {
     exit;
 }
 
+
 /*
  * ------------------------------------------------------------
  * Obtener catálogo
@@ -52,11 +73,13 @@ $videos = scanCatalog($hlsDirectory);
 $video = null;
 
 foreach ($videos as $candidate) {
+
     if ($candidate['id'] === $id) {
         $video = $candidate;
         break;
     }
 }
+
 
 /*
  * ------------------------------------------------------------
@@ -65,6 +88,7 @@ foreach ($videos as $candidate) {
  */
 
 if ($video === null) {
+
     http_response_code(404);
 
     echo json_encode(
@@ -79,25 +103,125 @@ if ($video === null) {
     exit;
 }
 
+
 /*
  * ------------------------------------------------------------
- * Leer master.m3u8
- *
- * El master contiene BANDWIDTH y AVERAGE-BANDWIDTH
- * para cada variante.
+ * Rutas de las fuentes HLS
  * ------------------------------------------------------------
  */
 
-$masterPath =
+$videoDirectory =
     $hlsDirectory .
     DIRECTORY_SEPARATOR .
-    $video['id'] .
-    DIRECTORY_SEPARATOR .
-    'master.m3u8';
+    $video['id'];
 
-$masterContent = file_get_contents($masterPath);
+$sourceFiles = [
+    'master' =>
+        $videoDirectory .
+        DIRECTORY_SEPARATOR .
+        'master.m3u8',
+
+    'v0' =>
+        $videoDirectory .
+        DIRECTORY_SEPARATOR .
+        'v0' .
+        DIRECTORY_SEPARATOR .
+        'prog_index.m3u8',
+
+    'v1' =>
+        $videoDirectory .
+        DIRECTORY_SEPARATOR .
+        'v1' .
+        DIRECTORY_SEPARATOR .
+        'prog_index.m3u8',
+
+    'v2' =>
+        $videoDirectory .
+        DIRECTORY_SEPARATOR .
+        'v2' .
+        DIRECTORY_SEPARATOR .
+        'prog_index.m3u8',
+];
+
+
+/*
+ * ------------------------------------------------------------
+ * Firma de la caché
+ * ------------------------------------------------------------
+ */
+
+$signature = buildMetadataCacheSignature(
+    $sourceFiles
+);
+
+
+/*
+ * ------------------------------------------------------------
+ * Archivo de caché
+ *
+ * El nombre se basa en un hash del ID para evitar problemas
+ * con caracteres especiales en los nombres de archivo.
+ * ------------------------------------------------------------
+ */
+
+$cacheFile =
+    $cacheDirectory .
+    DIRECTORY_SEPARATOR .
+    hash('sha256', $video['id']) .
+    '.json';
+
+
+/*
+ * ------------------------------------------------------------
+ * Intentar recuperar caché
+ * ------------------------------------------------------------
+ */
+
+$cachedMetadata = loadMetadataCache(
+    $cacheFile,
+    $signature
+);
+
+if ($cachedMetadata !== null) {
+
+    header(
+        'X-Foxidna-Metadata-Cache: HIT'
+    );
+
+    echo json_encode(
+        $cachedMetadata,
+        JSON_PRETTY_PRINT
+        | JSON_UNESCAPED_SLASHES
+        | JSON_UNESCAPED_UNICODE
+    );
+
+    exit;
+}
+
+
+/*
+ * No existe una caché válida.
+ * FFprobe tendrá que ejecutarse.
+ */
+
+header(
+    'X-Foxidna-Metadata-Cache: MISS'
+);
+
+
+/*
+ * ------------------------------------------------------------
+ * Leer master.m3u8
+ * ------------------------------------------------------------
+ */
+
+$masterPath = $sourceFiles['master'];
+
+$masterContent =
+    file_get_contents($masterPath);
 
 if ($masterContent === false) {
+
     http_response_code(500);
 
     echo json_encode(
@@ -111,6 +235,7 @@ if ($masterContent === false) {
 
     exit;
 }
+
 
 /*
  * ------------------------------------------------------------
@@ -135,7 +260,10 @@ foreach ($lines as $line) {
         continue;
     }
 
-    if (str_starts_with($line, '#EXT-X-STREAM-INF:')) {
+    if (str_starts_with(
+        $line,
+        '#EXT-X-STREAM-INF:'
+    )) {
 
         $attributeText =
             substr(
@@ -155,6 +283,7 @@ foreach ($lines as $line) {
                 $match
             )
         ) {
+
             $currentAttributes['bandwidth'] =
                 (int) $match[1];
         }
@@ -166,6 +295,7 @@ foreach ($lines as $line) {
                 $match
             )
         ) {
+
             $currentAttributes['average_bandwidth'] =
                 (int) $match[1];
         }
@@ -173,16 +303,13 @@ foreach ($lines as $line) {
         continue;
     }
 
-    /*
-     * La línea posterior a EXT-X-STREAM-INF
-     * contiene la URI de la variante.
-     */
     if (
         $currentAttributes !== null &&
         !str_starts_with($line, '#')
     ) {
 
-        $variant = explode('/', $line, 2)[0];
+        $variant =
+            explode('/', $line, 2)[0];
 
         $masterVariants[$variant] =
             $currentAttributes;
@@ -190,6 +317,7 @@ foreach ($lines as $line) {
         $currentAttributes = null;
     }
 }
+
 
 /*
  * ------------------------------------------------------------
@@ -199,9 +327,12 @@ foreach ($lines as $line) {
 
 $qualities = [];
 
+$duration = null;
+
 foreach ($video['qualities'] as $variant => $quality) {
 
     if (!$quality['available']) {
+
         $qualities[$variant] = [
             'label' => $quality['label'],
             'available' => false,
@@ -211,18 +342,12 @@ foreach ($video['qualities'] as $variant => $quality) {
     }
 
     $playlistPath =
-        $hlsDirectory .
-        DIRECTORY_SEPARATOR .
-        $video['id'] .
+        $videoDirectory .
         DIRECTORY_SEPARATOR .
         $variant .
         DIRECTORY_SEPARATOR .
         'prog_index.m3u8';
 
-    /*
-     * Solo solicitamos a FFprobe los campos que realmente
-     * necesitamos.
-     */
     $command =
         '/usr/bin/ffprobe ' .
         '-v error ' .
@@ -245,10 +370,12 @@ foreach ($video['qualities'] as $variant => $quality) {
     );
 
     if ($exitCode !== 0) {
+
         $qualities[$variant] = [
             'label' => $quality['label'],
             'available' => false,
-            'error' => 'FFprobe no pudo analizar la variante.',
+            'error' =>
+                'FFprobe no pudo analizar la variante.',
         ];
 
         continue;
@@ -260,47 +387,41 @@ foreach ($video['qualities'] as $variant => $quality) {
     );
 
     if (!is_array($probeData)) {
+
         $qualities[$variant] = [
             'label' => $quality['label'],
             'available' => false,
-            'error' => 'Respuesta JSON inválida de FFprobe.',
+            'error' =>
+                'Respuesta JSON inválida de FFprobe.',
         ];
 
         continue;
     }
 
-    /*
-     * FFprobe puede devolver el stream dentro de
-     * "streams" y también dentro de "programs".
-     *
-     * Con -select_streams v:0 usamos "streams".
-     */
-    $stream = $probeData['streams'][0] ?? null;
+    $stream =
+        $probeData['streams'][0] ?? null;
 
     if (!is_array($stream)) {
+
         $qualities[$variant] = [
             'label' => $quality['label'],
             'available' => false,
-            'error' => 'No se encontró stream de vídeo.',
+            'error' =>
+                'No se encontró stream de vídeo.',
         ];
 
         continue;
     }
 
-    /*
-     * Duración global.
-     */
     if (
-        !isset($duration) &&
+        $duration === null &&
         isset($probeData['format']['duration'])
     ) {
-        $duration = (float) $probeData['format']['duration'];
+
+        $duration =
+            (float) $probeData['format']['duration'];
     }
 
-    /*
-     * Usamos AVERAGE-BANDWIDTH como bitrate principal.
-     * BANDWIDTH queda como valor máximo declarado.
-     */
     $averageBitrate =
         $masterVariants[$variant]['average_bandwidth']
         ?? null;
@@ -310,35 +431,73 @@ foreach ($video['qualities'] as $variant => $quality) {
         ?? null;
 
     $qualities[$variant] = [
+
         'label' => $quality['label'],
+
         'available' => true,
-        'width' => isset($stream['width'])
+
+        'width' =>
+            isset($stream['width'])
             ? (int) $stream['width']
             : null,
-        'height' => isset($stream['height'])
+
+        'height' =>
+            isset($stream['height'])
             ? (int) $stream['height']
             : null,
-        'codec' => $stream['codec_name'] ?? null,
-        'bitrate' => $averageBitrate,
-        'peak_bitrate' => $peakBitrate,
+
+        'codec' =>
+            $stream['codec_name']
+            ?? null,
+
+        'bitrate' =>
+            $averageBitrate,
+
+        'peak_bitrate' =>
+            $peakBitrate,
     ];
 }
 
+
 /*
  * ------------------------------------------------------------
- * Respuesta
+ * Construir respuesta
  * ------------------------------------------------------------
  */
 
-$response = [
+$metadata = [
+
     'id' => $video['id'],
+
     'title' => $video['title'],
-    'duration' => $duration ?? null,
+
+    'duration' => $duration,
+
     'qualities' => $qualities,
 ];
 
+
+/*
+ * ------------------------------------------------------------
+ * Guardar caché
+ * ------------------------------------------------------------
+ */
+
+saveMetadataCache(
+    $cacheFile,
+    $signature,
+    $metadata
+);
+
+
+/*
+ * ------------------------------------------------------------
+ * Respuesta JSON
+ * ------------------------------------------------------------
+ */
+
 echo json_encode(
-    $response,
+    $metadata,
     JSON_PRETTY_PRINT
     | JSON_UNESCAPED_SLASHES
     | JSON_UNESCAPED_UNICODE
