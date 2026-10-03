@@ -11,6 +11,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const bitrateData = document.getElementById("bitrateData");
     const downData = document.getElementById("downData");
 
+	const durationData = document.getElementById("durationData");
+
+	const codecData = document.getElementById("codecData");
+
+	const qualitiesData = document.getElementById("qualitiesData");
+
 
     /* =========================================================
        Obtener identificador del vídeo
@@ -25,6 +31,151 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const videoSrc = `/hls/${videoId}/master.m3u8`;
+	/* =========================================================
+   Metadatos del vídeo
+   ========================================================= */
+
+function formatDuration(seconds) {
+
+    if (!Number.isFinite(seconds) || seconds < 0) {
+        return "No disponible";
+    }
+
+    const totalSeconds = Math.round(seconds);
+
+    const hours =
+        Math.floor(totalSeconds / 3600);
+
+    const minutes =
+        Math.floor((totalSeconds % 3600) / 60);
+
+    const remainingSeconds =
+        totalSeconds % 60;
+
+    if (hours > 0) {
+        return `${hours}:${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+    }
+
+    return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
+}
+
+
+function formatBitrate(bitsPerSecond) {
+
+    if (!Number.isFinite(bitsPerSecond) || bitsPerSecond <= 0) {
+        return "No disponible";
+    }
+
+    return `${(bitsPerSecond / 1000000).toFixed(2)} Mb/s`;
+}
+
+
+async function loadVideoMetadata() {
+
+    try {
+
+        const response = await fetch(
+            `/api/metadata.php?id=${encodeURIComponent(videoId)}`,
+            {
+                cache: "no-store"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                `Error HTTP ${response.status}`
+            );
+        }
+
+        const metadata = await response.json();
+
+        /*
+         * Duración global
+         */
+        durationData.textContent =
+            formatDuration(metadata.duration);
+
+        /*
+         * Códec de vídeo.
+         *
+         * Tomamos v0 como referencia cuando está disponible.
+         * Si no existe, buscamos la primera representación válida.
+         */
+        let referenceQuality = null;
+
+        if (
+            metadata.qualities &&
+            metadata.qualities.v0 &&
+            metadata.qualities.v0.available
+        ) {
+            referenceQuality = metadata.qualities.v0;
+        } else if (metadata.qualities) {
+
+            for (const quality of Object.values(metadata.qualities)) {
+
+                if (quality.available) {
+                    referenceQuality = quality;
+                    break;
+                }
+            }
+        }
+
+        codecData.textContent =
+            referenceQuality?.codec || "No disponible";
+
+        /*
+         * Representaciones disponibles
+         */
+        qualitiesData.replaceChildren();
+
+        const qualityOrder = ["v0", "v1", "v2"];
+
+        qualityOrder.forEach((variant) => {
+
+            const quality =
+                metadata.qualities?.[variant];
+
+            if (!quality) {
+                return;
+            }
+
+            const row = document.createElement("div");
+
+            if (!quality.available) {
+
+                row.textContent =
+                    `${quality.label}: No disponible`;
+
+            } else {
+
+                row.textContent =
+                    `${quality.label}  •  ` +
+                    `${quality.width} × ${quality.height}  •  ` +
+                    `${formatBitrate(quality.bitrate)}`;
+            }
+
+            qualitiesData.appendChild(row);
+        });
+
+    } catch (error) {
+
+        console.error(
+            "No fue posible cargar los metadatos del vídeo:",
+            error
+        );
+
+        durationData.textContent = "No disponible";
+        codecData.textContent = "No disponible";
+        qualitiesData.textContent = "No disponible";
+    }
+}
+
+
+/*
+ * Los metadatos se cargan independientemente
+ * del reproductor.
+ */
+loadVideoMetadata();
 
 
     /* =========================================================
