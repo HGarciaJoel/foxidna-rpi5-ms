@@ -1,8 +1,6 @@
-document.addEventListener("DOMContentLoaded", () => {
+function animateVideoCards(cards) {
 
-    const cards = document.querySelectorAll(".video-card");
-
-    if (!cards.length || typeof anime === "undefined") {
+    if (!cards || !cards.length || typeof anime === "undefined") {
         return;
     }
 
@@ -14,5 +12,21 @@ document.addEventListener("DOMContentLoaded", () => {
         duration: 550,
         ease: "out(3)"
     });
+}
+
+
+/*
+ * También permitimos animar tarjetas que ya existan
+ * al cargar la página.
+ */
+document.addEventListener("DOMContentLoaded", () => {
+
+    const cards = document.querySelectorAll(".video-card");
+
+    if (!cards.length) {
+        return;
+    }
+
+    animateVideoCards(cards);
 
 });
