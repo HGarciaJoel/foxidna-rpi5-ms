@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="assets/css/fonts.css">
     
     <!-- 1. CSS de Plyr añadido aquí -->
-    <link rel="stylesheet" href="assets/css/plyr.css" />
     
     <link rel="stylesheet" href="assets/css/player.css">
     <link rel="stylesheet" href="assets/css/plyr.css" />
@@ -24,9 +23,21 @@
         </div>
     </div>
 
+    <div class="player-layout">
+
     <div class="player-wrapper">
-        <!-- 2. Quitamos 'controls' y 'autoplay' para evitar conflictos con Plyr -->
         <video id="videoPlayer" crossorigin playsinline></video>
+    </div>
+
+    <aside class="video-sidebar" aria-label="Otros vídeos">
+        <div class="sidebar-header">
+            <h2 class="sidebar-title">Otros vídeos</h2>
+            <span class="sidebar-subtitle">Servidor local</span>
+        </div>
+
+        <div id="videoSidebarList" class="video-sidebar-list"></div>
+    </aside>
+
     </div>
 
     <div class="metrics-panel">

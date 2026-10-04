@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const video = document.getElementById("videoPlayer");
     const qualitySelect = document.getElementById("qualitySelect");
 
+    const videoSidebarList = document.getElementById("videoSidebarList");
+
     const resData = document.getElementById("resData");
     const bitrateData = document.getElementById("bitrateData");
     const downData = document.getElementById("downData");
@@ -176,6 +178,183 @@ async function loadVideoMetadata() {
  * del reproductor.
  */
 loadVideoMetadata();
+
+
+async function loadSidebarVideos() {
+
+    if (!videoSidebarList) {
+        return;
+    }
+
+    try {
+
+        /*
+         * Pedimos cinco elementos para poder excluir
+         * el vídeo que ya se está reproduciendo.
+         */
+        const response = await fetch(
+            "/api/scanner.php?limit=5",
+            {
+                cache: "no-store"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                `Error HTTP ${response.status}`
+            );
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data.videos)) {
+            throw new Error(
+                "La respuesta de scanner.php no contiene una lista válida."
+            );
+        }
+
+        /*
+         * Excluir el vídeo actual y tomar los primeros cuatro.
+         */
+        const sidebarVideos =
+            data.videos
+                .filter((video) => video.id !== videoId)
+                .slice(0, 4);
+
+        videoSidebarList.replaceChildren();
+
+        const fragment =
+            document.createDocumentFragment();
+
+        const cards = [];
+
+        sidebarVideos.forEach((video) => {
+
+            const card = document.createElement("a");
+
+            card.href =
+                `player.html?v=${encodeURIComponent(video.id)}`;
+
+            card.className = "video-sidebar-card";
+
+            /*
+             * Vista previa abstracta.
+             */
+            const preview =
+                document.createElement("div");
+
+            preview.className =
+                "sidebar-preview";
+
+            const overlay =
+                document.createElement("div");
+
+            overlay.className =
+                "sidebar-preview-overlay";
+
+            const badge =
+                document.createElement("span");
+
+            badge.className =
+                "sidebar-badge";
+
+            badge.textContent =
+                "LOCAL";
+
+            preview.appendChild(overlay);
+            preview.appendChild(badge);
+
+
+            /*
+             * Información.
+             */
+            const content =
+                document.createElement("div");
+
+            content.className =
+                "sidebar-card-content";
+
+            const title =
+                document.createElement("h3");
+
+            title.className =
+                "sidebar-card-title";
+
+            title.textContent =
+                video.title || video.id;
+
+            const meta =
+                document.createElement("p");
+
+            meta.className =
+                "sidebar-card-meta";
+
+            meta.textContent =
+                "Servidor local";
+
+            content.appendChild(title);
+            content.appendChild(meta);
+
+
+            /*
+             * Ensamblar tarjeta.
+             */
+            card.appendChild(preview);
+            card.appendChild(content);
+
+            fragment.appendChild(card);
+            cards.push(card);
+        });
+
+        videoSidebarList.appendChild(fragment);
+
+
+        /*
+         * Animación de entrada.
+         */
+        if (
+            cards.length &&
+            typeof anime !== "undefined"
+        ) {
+
+            anime.animate(cards, {
+                opacity: [0, 1],
+                translateY: [12, 0],
+                scale: [0.98, 1],
+                delay: anime.stagger(70),
+                duration: 420,
+                ease: "out(3)"
+            });
+        }
+
+    } catch (error) {
+
+        console.error(
+            "No fue posible cargar los vídeos de la barra lateral:",
+            error
+        );
+
+        videoSidebarList.replaceChildren();
+
+        const message =
+            document.createElement("p");
+
+        message.textContent =
+            "No fue posible cargar otros vídeos.";
+
+        message.style.color =
+            "#777780";
+
+        message.style.fontSize =
+            "12px";
+
+        videoSidebarList.appendChild(message);
+    }
+}
+
+
+loadSidebarVideos();
+
 
 
     /* =========================================================

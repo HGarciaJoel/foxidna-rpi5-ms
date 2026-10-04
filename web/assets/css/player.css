@@ -138,3 +138,245 @@ video {
     width: 100%;
     height: 100%;
 }
+
+/* =========================================================
+   Layout del reproductor + barra lateral
+   ========================================================= */
+
+.player-layout {
+    width: 100%;
+    max-width: 1200px;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+
+    gap: 20px;
+    align-items: start;
+}
+
+.player-layout .player-wrapper {
+    width: 100%;
+    max-width: none;
+}
+
+
+/* =========================================================
+   Barra lateral
+   ========================================================= */
+
+.video-sidebar {
+    width: 100%;
+
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+
+    padding: 16px;
+
+    box-sizing: border-box;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.sidebar-title {
+    margin: 0;
+
+    color: var(--text-main);
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.sidebar-subtitle {
+    color: #777780;
+
+    font-family: 'Fira Code', monospace;
+    font-size: 10px;
+
+    white-space: nowrap;
+}
+
+.video-sidebar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+/* =========================================================
+   Tarjeta lateral
+   ========================================================= */
+
+.video-sidebar-card {
+    display: block;
+
+    color: inherit;
+    text-decoration: none;
+
+    background: #1b1b20;
+
+    border: 1px solid transparent;
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    opacity: 1;
+
+    transition:
+        transform 200ms ease,
+        background-color 200ms ease,
+        border-color 200ms ease,
+        box-shadow 200ms ease;
+}
+
+.video-sidebar-card:hover {
+    transform: translateY(-2px);
+
+    background: #202027;
+
+    border-color: rgba(255, 0, 204, 0.35);
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.28),
+        0 0 18px rgba(255, 0, 204, 0.06);
+}
+
+.video-sidebar-card:focus-visible {
+    outline: 2px solid var(--accent-pink);
+    outline-offset: 2px;
+}
+
+
+/* =========================================================
+   Vista previa abstracta
+   ========================================================= */
+
+.sidebar-preview {
+    position: relative;
+
+    width: 100%;
+    aspect-ratio: 16 / 9;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 30% 30%,
+            rgba(255, 0, 204, 0.16),
+            transparent 36%
+        ),
+        radial-gradient(
+            circle at 70% 70%,
+            rgba(179, 0, 255, 0.14),
+            transparent 42%
+        ),
+        linear-gradient(
+            135deg,
+            #17171d,
+            #24242b
+        );
+}
+
+.sidebar-preview-overlay {
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 0, 204, 0.04),
+            rgba(179, 0, 255, 0.08)
+        );
+
+    transition: opacity 200ms ease;
+}
+
+.video-sidebar-card:hover .sidebar-preview-overlay {
+    opacity: 0.6;
+}
+
+.sidebar-badge {
+    position: absolute;
+
+    top: 8px;
+    right: 8px;
+
+    padding: 4px 6px;
+
+    border-radius: 6px;
+
+    background: rgba(0, 0, 0, 0.62);
+
+    color: #ffffff;
+
+    font-family: 'Fira Code', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+}
+
+
+/* =========================================================
+   Información
+   ========================================================= */
+
+.sidebar-card-content {
+    padding: 9px 10px 10px;
+}
+
+.sidebar-card-title {
+    margin: 0;
+
+    color: var(--text-main);
+
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.35;
+
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+
+    overflow: hidden;
+}
+
+.sidebar-card-meta {
+    margin: 5px 0 0;
+
+    color: #8c8c96;
+
+    font-family: 'Fira Code', monospace;
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .player-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .video-sidebar-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .video-sidebar-list {
+        grid-template-columns: 1fr;
+    }
+}
