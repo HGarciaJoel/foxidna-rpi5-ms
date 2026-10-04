@@ -1,32 +1,48 @@
-```css
 /* =========================================================
    FOXIDNA
-   Tema visual principal
+   Tema visual principal del catálogo (index.html).
+   Define variables globales, tipografías locales, layout de la
+   grilla de videos y los estilos de las tarjetas del catálogo.
    ========================================================= */
 
 
 /* ---------------------------------------------------------
-   Variables
-   --------------------------------------------------------- */
-/* =========================================================
    Fuentes locales
-   ========================================================= */
+   --------------------------------------------------------- */
+/*
+   Declaración de tipografías servidas desde el propio servidor,
+   sin depender de CDNs externos.
+   - Inter: tipografía de interfaz (uso general del sitio).
+   - Fira Code: tipografía monoespaciada para información técnica
+     (contadores, etiquetas, metadatos).
+   El formato woff2 es el más eficiente para navegadores modernos.
+*/
 
 @font-face {
     font-family: "Inter";
     src: url("../fonts/Inter/InterVariable.woff2") format("woff2");
-    font-weight: 100 900;
+    font-weight: 100 900; /* Variable: cubre todo el rango de pesos. */
     font-style: normal;
-    font-display: swap;
+    font-display: swap;   /* Muestra texto con fuente de respaldo mientras carga. */
 }
 
 @font-face {
     font-family: "Fira Code";
     src: url("../fonts/FiraCode/FiraCode-VF.woff2") format("woff2");
-    font-weight: 300 700;
+    font-weight: 300 700; /* Variable: pesos usados en etiquetas y metadatos. */
     font-style: normal;
     font-display: swap;
 }
+
+
+/* ---------------------------------------------------------
+   Variables
+   --------------------------------------------------------- */
+/*
+   Paleta y constantes del tema. Al centralizarlas aquí, cualquier
+   cambio de color o radio se propaga a todo el catálogo sin tocar
+   las reglas individuales.
+*/
 :root {
     /* Fondo */
     --bg-main: #0f0f12;
@@ -38,7 +54,7 @@
     --text-secondary: #a5a5af;
     --text-subtle: #777780;
 
-    /* Identidad foxidna */
+    /* Identidad foxidna: se usan en degradados, acentos y bordes. */
     --accent-pink: #ff00cc;
     --accent-crimson: #ff004d;
     --accent-purple: #b300ff;
@@ -50,7 +66,7 @@
     --radius-card: 12px;
     --radius-small: 8px;
 
-    /* Movimiento */
+    /* Movimiento: duraciones reutilizadas en transiciones. */
     --transition-fast: 140ms ease;
     --transition-normal: 200ms ease;
     --transition-slow: 280ms ease;
@@ -65,15 +81,22 @@
    Reset básico
    --------------------------------------------------------- */
 
+/* Todos los elementos calculan su tamaño incluyendo padding y borde. */
 * {
     box-sizing: border-box;
 }
 
+/* Fondo base y declaración de esquema oscuro para el navegador. */
 html {
     background: var(--bg-main);
     color-scheme: dark;
 }
 
+/*
+   Cuerpo del catálogo.
+   Incluye un degradado radial sutil en la parte superior para dar
+   profundidad al fondo sin distraer del contenido.
+*/
 body {
     margin: 0;
     min-height: 100vh;
@@ -94,7 +117,10 @@ body {
 /* ---------------------------------------------------------
    Header
    --------------------------------------------------------- */
-
+/*
+   Barra superior del catálogo. Contiene únicamente la marca; se
+   mantiene fija en la parte alta del layout con altura constante.
+*/
 .site-header {
     display: flex;
     align-items: center;
@@ -111,7 +137,10 @@ body {
 /* ---------------------------------------------------------
    Marca
    --------------------------------------------------------- */
-
+/*
+   Nombre "foxidna" con degradado de la identidad visual aplicado
+   al texto mediante background-clip.
+*/
 .brand-name {
     font-size: 30px;
     font-weight: 800;
@@ -125,6 +154,7 @@ body {
             var(--accent-purple)
         );
 
+    /* Hace que el degradado se vea a través del texto. */
     background-clip: text;
     -webkit-background-clip: text;
 
@@ -135,7 +165,10 @@ body {
 /* ---------------------------------------------------------
    Contenido principal
    --------------------------------------------------------- */
-
+/*
+   Contenedor central del catálogo. Ancho máximo 1500px, con margen
+   lateral proporcional en pantallas grandes.
+*/
 .main-content {
     width: min(1500px, calc(100% - 80px));
     margin: 0 auto;
@@ -146,7 +179,10 @@ body {
 /* ---------------------------------------------------------
    Encabezado de biblioteca
    --------------------------------------------------------- */
-
+/*
+   Título "Vídeos" y contador de elementos cargados. El contador
+   usa tipografía técnica (Fira Code) para diferenciarlo del título.
+*/
 .section-header {
     display: flex;
     align-items: baseline;
@@ -174,7 +210,11 @@ body {
 /* ---------------------------------------------------------
    Grid
    --------------------------------------------------------- */
-
+/*
+   Grilla responsiva de tarjetas. auto-fill permite que las tarjetas
+   se acomoden según el ancho disponible; minmax(300px, 1fr)
+   garantiza un ancho mínimo legible y que crezcan proporcionalmente.
+*/
 .video-grid {
     display: grid;
 
@@ -191,7 +231,10 @@ body {
 /* ---------------------------------------------------------
    Tarjeta
    --------------------------------------------------------- */
-
+/*
+   Tarjeta de video del catálogo. Es un enlace completo, por eso se
+   hereda el color del texto y se quita el subrayado.
+*/
 .video-card {
     display: block;
 
@@ -217,7 +260,10 @@ body {
 /* ---------------------------------------------------------
    Hover tarjeta
    --------------------------------------------------------- */
-
+/*
+   Al pasar el cursor, la tarjeta se eleva ligeramente y aparece un
+   borde rosa con brillo. Es la pista visual principal de interacción.
+*/
 .video-card:hover {
     transform: translateY(-5px);
 
@@ -234,7 +280,11 @@ body {
 /* ---------------------------------------------------------
    Zona visual de vídeo
    --------------------------------------------------------- */
-
+/*
+   Área superior de la tarjeta. Mantiene la proporción 16:9 con
+   aspect-ratio. Mientras no haya miniatura real, se muestra un
+   fondo de degradados radiales en tonos foxidna.
+*/
 .video-preview {
     position: relative;
 
@@ -265,7 +315,10 @@ body {
 /* ---------------------------------------------------------
    Capa visual
    --------------------------------------------------------- */
-
+/*
+   Overlay delgado sobre el fondo abstracto. Al hacer hover, se
+   reduce su opacidad para dar sensación de "encendido".
+*/
 .preview-overlay {
     position: absolute;
     inset: 0;
@@ -289,7 +342,11 @@ body {
 /* ---------------------------------------------------------
    Botón de reproducción
    --------------------------------------------------------- */
-
+/*
+   Botón circular con degradado foxidna, centrado sobre el área
+   visual. Al hacer hover en la tarjeta, crece ligeramente y aumenta
+   su brillo.
+*/
 .play-button {
     position: absolute;
 
@@ -343,12 +400,15 @@ body {
 
 
 /* Triángulo del botón */
-
+/*
+   Triángulo blanco construido con bordes. Simula el ícono "play"
+   sin requerir SVG ni fuente de iconos.
+*/
 .play-button span {
     width: 0;
     height: 0;
 
-    margin-left: 4px;
+    margin-left: 4px; /* Compensa ópticamente el centro del triángulo. */
 
     border-top: 9px solid transparent;
     border-bottom: 9px solid transparent;
@@ -359,7 +419,10 @@ body {
 /* ---------------------------------------------------------
    Badge
    --------------------------------------------------------- */
-
+/*
+   Etiqueta pequeña en la esquina superior derecha de la tarjeta.
+   Sirve para mostrar categoría, duración o cualquier marca corta.
+*/
 .video-badge {
     position: absolute;
 
@@ -385,7 +448,11 @@ body {
 /* ---------------------------------------------------------
    Información que aparece con hover
    --------------------------------------------------------- */
-
+/*
+   Bloque inferior de la tarjeta que se muestra al hacer hover.
+   Incluye una etiqueta pequeña y el título del video sobre un
+   degradado negro para asegurar contraste.
+*/
 .video-info-overlay {
     position: absolute;
 
@@ -440,7 +507,10 @@ body {
 /* ---------------------------------------------------------
    Contenido de tarjeta
    --------------------------------------------------------- */
-
+/*
+   Área inferior de la tarjeta (siempre visible): título del video
+   y metadatos breves (formato, duración, etc.).
+*/
 .card-content {
     padding: 14px 15px 16px;
 }
@@ -468,7 +538,10 @@ body {
 /* ---------------------------------------------------------
    Accesibilidad: foco de teclado
    --------------------------------------------------------- */
-
+/*
+   Contorno visible al navegar con Tab. Es indispensable para que la
+   tarjeta sea usable sin mouse.
+*/
 .video-card:focus-visible {
     outline: 2px solid var(--accent-pink);
     outline-offset: 3px;
@@ -478,7 +551,10 @@ body {
 /* ---------------------------------------------------------
    Preparación para futuras versiones responsive
    --------------------------------------------------------- */
-
+/*
+   Ajustes para pantallas medianas. Reduce el padding del header y
+   amplía el ancho útil del contenido.
+*/
 @media (max-width: 800px) {
     .site-header {
         padding: 0 20px;
@@ -493,7 +569,10 @@ body {
 /* ---------------------------------------------------------
    Respeto por usuarios que reducen movimiento
    --------------------------------------------------------- */
-
+/*
+   Si el usuario activó "reducir movimiento" en su sistema operativo,
+   se desactivan transiciones y transformaciones para evitar molestias.
+*/
 @media (prefers-reduced-motion: reduce) {
 
     *,
@@ -503,4 +582,3 @@ body {
         transform: none !important;
     }
 }
-```

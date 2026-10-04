@@ -4,15 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reproductor - foxidna</title>
-    
+
+    <!-- Tipografías locales (Inter y Fira Code). -->
     <link rel="stylesheet" href="assets/css/fonts.css">
-    
-    <!-- 1. CSS de Plyr añadido aquí -->
-    
+
+    <!--
+        Hojas de estilo del reproductor:
+        - player.css: estilos propios de esta vista (layout, paneles,
+          barra superior, sidebar).
+        - plyr.css: estilos del reproductor Plyr, que se carga desde
+          assets/css para no depender de un CDN externo.
+    -->
     <link rel="stylesheet" href="assets/css/player.css">
     <link rel="stylesheet" href="assets/css/plyr.css" />
 </head>
 <body>
+
+    <!--
+        Barra superior:
+        - Enlace de regreso al catálogo (index.html).
+        - Selector de calidad. La opción "Automático" (-1) es la única
+          inicial; player.js agrega las demás representaciones
+          disponibles (v0, v1, v2) al leer el master.m3u8 con hls.js.
+    -->
     <div class="header">
         <a href="index.html" class="back-btn">← Volver al catálogo</a>
         <div class="controls-bar">
@@ -23,23 +37,47 @@
         </div>
     </div>
 
+    <!--
+        Layout de dos columnas:
+        - Izquierda: el reproductor de video.
+        - Derecha: lista de otros videos del catálogo.
+    -->
     <div class="player-layout">
 
-    <div class="player-wrapper">
-        <video id="videoPlayer" crossorigin playsinline></video>
-    </div>
-
-    <aside class="video-sidebar" aria-label="Otros vídeos">
-        <div class="sidebar-header">
-            <h2 class="sidebar-title">Otros vídeos</h2>
-            <span class="sidebar-subtitle">Servidor local</span>
+        <!--
+            Reproductor. El atributo crossorigin es necesario para que
+            el navegador permita leer datos del flujo HLS desde JS
+            (bitrate, resolución, etc.) sin bloqueos de origen cruzado.
+            El atributo playsinline evita el modo pantalla completa
+            forzado en dispositivos móviles.
+        -->
+        <div class="player-wrapper">
+            <video id="videoPlayer" crossorigin playsinline></video>
         </div>
 
-        <div id="videoSidebarList" class="video-sidebar-list"></div>
-    </aside>
+        <!--
+            Panel lateral con otros videos. #videoSidebarList se llena
+            dinámicamente desde player.js con los mismos datos del
+            catálogo que usa index.html.
+        -->
+        <aside class="video-sidebar" aria-label="Otros vídeos">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">Otros vídeos</h2>
+                <span class="sidebar-subtitle">Servidor local</span>
+            </div>
+
+            <div id="videoSidebarList" class="video-sidebar-list"></div>
+        </aside>
 
     </div>
 
+    <!--
+        Primer panel de métricas (medidas en tiempo real durante la
+        reproducción). player.js actualiza estos valores periódicamente:
+        - resData: resolución de la representación activa.
+        - bitrateData: tasa de bits de video.
+        - downData: velocidad de descarga estimada.
+    -->
     <div class="metrics-panel">
         <div class="metrics-block">
             <div class="metrics-title">Resolución Activa</div>
@@ -55,29 +93,40 @@
         </div>
     </div>
 
-	<div class="metrics-panel">
-    <div class="metrics-block">
-        <div class="metrics-title">Duración</div>
-        <div id="durationData" class="metrics-data">Cargando...</div>
+    <!--
+        Segundo panel de métricas (datos del flujo cargado, se calculan
+        una vez al iniciar la reproducción):
+        - durationData: duración total del video.
+        - codecData: códec de video detectado.
+        - qualitiesData: número y detalle de las representaciones
+          disponibles en el master.m3u8.
+    -->
+    <div class="metrics-panel">
+        <div class="metrics-block">
+            <div class="metrics-title">Duración</div>
+            <div id="durationData" class="metrics-data">Cargando...</div>
+        </div>
+        <div class="metrics-block">
+            <div class="metrics-title">Códec de Vídeo</div>
+            <div id="codecData" class="metrics-data">Cargando...</div>
+        </div>
+        <div class="metrics-block">
+            <div class="metrics-title">Representaciones</div>
+            <div id="qualitiesData" class="metrics-data">Cargando...</div>
+        </div>
     </div>
 
-    <div class="metrics-block">
-        <div class="metrics-title">Códec de Vídeo</div>
-        <div id="codecData" class="metrics-data">Cargando...</div>
-    </div>
-
-    <div class="metrics-block">
-        <div class="metrics-title">Representaciones</div>
-        <div id="qualitiesData" class="metrics-data">Cargando...</div>
-    </div>
-	</div>
-
-
-
+    <!--
+        Scripts del reproductor, en orden de dependencia:
+        - hls.min.js: motor HLS (vendor).
+        - plyr.polyfilled.js: controles del reproductor Plyr.
+        - anime.min.js: animaciones de la interfaz.
+        - player.js: inicializa HLS, Plyr, el selector de calidad, la
+          sidebar y los paneles de métricas.
+        - ui.js: utilidades comunes de la interfaz.
+    -->
     <script src="assets/js/vendor/hls.min.js"></script>
-    
-    <!-- 3. JS de Plyr añadido aquí -->
-    <script src="assets/js/vendor/plyr.polyfilled.js"></script>    
+    <script src="assets/js/vendor/plyr.polyfilled.js"></script>
     <script src="assets/js/vendor/animejs/anime.min.js"></script>
     <script src="assets/js/foxidna/player.js"></script>
     <script src="assets/js/foxidna/ui.js"></script>

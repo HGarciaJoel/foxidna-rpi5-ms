@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,44 +6,69 @@
 
     <title>foxidna</title>
 
-    <!-- Fuentes locales: se conectarán cuando agreguemos los archivos -->
-    <!-- Inter: interfaz -->
-    <!-- Fira Code: información técnica -->
-	<link rel="stylesheet" href="assets/css/fonts.css">
-	<link rel="stylesheet" href="assets/css/background-animation.css">
-        <link rel="stylesheet" href="assets/css/foxidna.css">
+    <!--
+        Hojas de estilo de la página de catálogo:
+        - fonts.css: declara las tipografías locales (Inter para interfaz,
+          Fira Code para información técnica).
+        - background-animation.css: estilos de la animación de fondo.
+        - foxidna.css: estilos propios de la interfaz del catálogo.
+    -->
+    <link rel="stylesheet" href="assets/css/fonts.css">
+    <link rel="stylesheet" href="assets/css/background-animation.css">
+    <link rel="stylesheet" href="assets/css/foxidna.css">
 </head>
 
 <body>
 
+    <!--
+        Contenedor de la criatura animada del fondo.
+        El elemento #creature es manipulado por
+        assets/js/foxidna/background-animation.js usando Anime.js.
+    -->
     <div id="creature-wrapper">
-    <div id="creature"></div>
+        <div id="creature"></div>
     </div>
 
+    <!-- Encabezado del sitio: solo muestra el nombre del proyecto. -->
     <header class="site-header">
         <div class="brand">
             <span class="brand-name">foxidna</span>
         </div>
     </header>
 
-
     <main class="main-content">
 
+        <!--
+            Sección del catálogo de videos.
+            - .video-grid es el contenedor donde library.js insertará
+              dinámicamente las tarjetas de cada video, obtenidas desde
+              la API (api/catalog.php).
+            - .section-count se actualiza con el número total de videos
+              cuando termina la carga del catálogo.
+        -->
         <section class="library">
             <div class="section-header">
                 <h1 class="section-title">Vídeos</h1>
                 <span class="section-count">Cargando</span>
             </div>
 
-
             <div class="video-grid"></div>
         </section>
 
     </main>
-	<script src="assets/js/vendor/animejs/anime.min.js"></script>
-        <script src="assets/js/foxidna/background-animation.js"></script>
-	<script src="assets/js/foxidna/animations.js"></script>
-	<script src="assets/js/foxidna/library.js"></script>
-	<script src="assets/js/foxidna/ui.js"></script>
+
+    <!--
+        Scripts de la página, en orden de dependencia:
+        - anime.min.js: biblioteca de animaciones (vendor).
+        - background-animation.js: animación de fondo con Anime.js.
+        - animations.js: transiciones e interacciones de la interfaz.
+        - library.js: consulta la API y construye la grilla de videos.
+        - ui.js: utilidades comunes de la interfaz.
+    -->
+    <script src="assets/js/vendor/animejs/anime.min.js"></script>
+    <script src="assets/js/foxidna/background-animation.js"></script>
+    <script src="assets/js/foxidna/animations.js"></script>
+    <script src="assets/js/foxidna/library.js"></script>
+    <script src="assets/js/foxidna/ui.js"></script>
 </body>
 </html>
