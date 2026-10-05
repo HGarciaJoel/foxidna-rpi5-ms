@@ -1,0 +1,24 @@
+Plyr 3.7.8
+MIT License
+Copyright (c) 2017-2020 Sam Potts
+
+Bundled third-party components
+--------------------------------
+
+LoadJS 3.6.1
+MIT License
+Copyright (c) Andres Morey
+
+rangetouch 2.0.1
+MIT License
+Copyright (c) Sam Potts
+
+custom-event-polyfill 1.0.7
+MIT License
+
+url-polyfill
+MIT License
+Copyright (c) Valentin Richard
+
+core-js
+MIT License
